@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Shooting Log 3.9</title>
+<title>My Shooting Log 5.0</title>
 <style>
 *{box-sizing:border-box}
 body{margin:auto;max-width:900px;padding:18px;background:#192522;color:#fff;font:16px Arial,sans-serif}
@@ -28,7 +28,7 @@ html.light body{background:#f4f2ed;color:#20332c}html.light section,html.light a
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#192522"></head>
 <body>
 <div class="brand"><img src="icon-192.png" alt=""><h1>MY SHOOTING LOG</h1></div>
-<p>Version 3.9 — Contact Edition</p>
+<p>Version 5.0 — Ultimate Edition Bêta</p>
 <div class="actions settings"><button onclick="toggleTheme()">Thème clair / sombre</button><button onclick="installApp()">Installer</button></div><label for="language">Langue / Language / Taal</label><select id="language" onchange="setLanguage(this.value)"><option value="fr">Français</option><option value="en">English</option><option value="nl">Nederlands</option></select><nav>
 <button onclick="show('home')">Accueil</button>
 <button onclick="show('session')">Séance</button>
@@ -254,7 +254,7 @@ function exportData(){
 const url=URL.createObjectURL(new Blob(
 [JSON.stringify(data)],{type:'application/json'}));
 const a=document.createElement('a');
-a.href=url;a.download='my-shooting-log-3.9-'+today()+'.json';
+a.href=url;a.download='my-shooting-log-5.0-'+today()+'.json';
 a.click();
 setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -305,13 +305,13 @@ const dictionary = {"Accueil": ["Home", "Start"], "Séance": ["Session", "Sessie
 let lang='fr';try{lang=localStorage.getItem('mslLanguage')||'fr'}catch(e){}if(!['fr','en','nl'].includes(lang))lang='fr';
 
 const creatorLabels={fr:['Créateur et concepteur de l’application','Contacter le créateur','Signaler un bug','Proposer une amélioration','Application gratuite'],en:['Application creator and designer','Contact the creator','Report a bug','Suggest an improvement','Free application'],nl:['Maker en ontwerper van de app','Contacteer de maker','Een fout melden','Een verbetering voorstellen','Gratis applicatie']};
-function creatorMarkup(){const t=creatorLabels[lang];const mail='mailto:myshootinglog@gmail.com';const link=(label,subject)=>'<a href="'+mail+'?subject='+encodeURIComponent('MY SHOOTING LOG 3.9 — '+subject)+'">'+label+'</a>';return '<div class="creator-contact"><strong>© 2026 Benoît Moureaux</strong><div>'+t[0]+'</div><div class="creator-links">'+link(t[1],t[1])+link(t[2],t[2])+link(t[3],t[3])+'</div><div><a href="'+mail+'">myshootinglog@gmail.com</a></div><small>'+t[4]+'</small></div>';}
+function creatorMarkup(){const t=creatorLabels[lang];const mail='mailto:myshootinglog@gmail.com';const link=(label,subject)=>'<a href="'+mail+'?subject='+encodeURIComponent('MY SHOOTING LOG 5.0 — '+subject)+'">'+label+'</a>';return '<div class="creator-contact"><strong>© 2026 Benoît Moureaux</strong><div>'+t[0]+'</div><div class="creator-links">'+link(t[1],t[1])+link(t[2],t[2])+link(t[3],t[3])+'</div><div><a href="'+mail+'">myshootinglog@gmail.com</a></div><small>'+t[4]+'</small></div>';}
 function renderCreator(){document.getElementById('creatorFooter').innerHTML=creatorMarkup();}
 
 let currentPage='home';const originalShow=show;
 function translateUI(){renderCreator();document.documentElement.lang=lang;document.getElementById('language').value=lang;if(lang==='fr')return;const nodes=document.querySelectorAll('nav button,.settings button,main label,main button,main h2,main h3,main small,main p,main option,#viewer button');for(const el of nodes){if(el.children.length||el.closest('article')&&!el.matches('button'))continue;const key=el.textContent.trim();if(dictionary[key]){if(el.tagName==='OPTION'&&!el.hasAttribute('value'))el.value=key;el.textContent=dictionary[key][lang==='en'?0:1];}}}
 const guide={fr:'Les données restent dans ce navigateur. Exportez régulièrement une sauvegarde. La restauration remplace les données actuelles. Les fichiers JSON ne sont pas chiffrés.',en:'Data stays in this browser. Export backups regularly. Restoring replaces current data. JSON files are not encrypted.',nl:'Gegevens blijven in deze browser. Exporteer regelmatig een back-up. Herstellen vervangt de huidige gegevens. JSON-bestanden zijn niet versleuteld.'};
-show=function(page){currentPage=page;if(page==='about'){main.innerHTML='<section><h2>MY SHOOTING LOG 3.9</h2><p>Contact Edition — Benoît Moureaux</p><p>'+guide[lang]+'</p>'+creatorMarkup()+'</section>';}else if(page==='help'&&lang!=='fr'){main.innerHTML='<section><h2>'+ (lang==='en'?'User guide':'Handleiding')+'</h2><p>'+guide[lang]+'</p><p>'+ (lang==='en'?'Profile: save your details and memberships separately. Budget: add expenses and filter by month. Calendar: view deadlines. Install: use your browser menu.':'Profiel: sla uw gegevens en lidmaatschappen afzonderlijk op. Budget: voeg uitgaven toe en filter per maand. Agenda: bekijk vervaldata. Installeren: gebruik het browsermenu.')+'</p></section>';}else originalShow(page);translateUI();};
+show=function(page){currentPage=page;if(page==='about'){main.innerHTML='<section><h2>MY SHOOTING LOG 5.0</h2><p>Ultimate Edition Bêta — Benoît Moureaux</p><p>'+guide[lang]+'</p>'+creatorMarkup()+'</section>';}else if(page==='help'&&lang!=='fr'){main.innerHTML='<section><h2>'+ (lang==='en'?'User guide':'Handleiding')+'</h2><p>'+guide[lang]+'</p><p>'+ (lang==='en'?'Profile: save your details and memberships separately. Budget: add expenses and filter by month. Calendar: view deadlines. Install: use your browser menu.':'Profiel: sla uw gegevens en lidmaatschappen afzonderlijk op. Budget: voeg uitgaven toe en filter per maand. Agenda: bekijk vervaldata. Installeren: gebruik het browsermenu.')+'</p></section>';}else originalShow(page);translateUI();};
 function setLanguage(v){if(!['fr','en','nl'].includes(v))return;if(!confirm('Changer de langue ? Les modifications non enregistrées seront perdues. / Change language? Unsaved changes will be lost. / Taal wijzigen? Niet-opgeslagen wijzigingen gaan verloren.')){document.getElementById('language').value=lang;return;}try{localStorage.setItem('mslLanguage',v)}catch(e){}location.reload();}
 
 const memoryFields = {
@@ -329,6 +329,23 @@ function attachMemory(){
  }}
 }
 const show35=show;show=function(page){show35(page);attachMemory();};
+
+const adminLabels={fr:['Documents','Sécurité','Rapport administratif','Ajouter un document','Mot de passe (12 caractères minimum)','Exporter une sauvegarde chiffrée','Restaurer une sauvegarde chiffrée'],en:['Documents','Security','Administrative report','Add document','Password (12 characters minimum)','Export encrypted backup','Restore encrypted backup'],nl:['Documenten','Beveiliging','Administratief verslag','Document toevoegen','Wachtwoord (minimaal 12 tekens)','Versleutelde back-up exporteren','Versleutelde back-up herstellen']};
+const al=adminLabels[lang];
+function download5(bytes,name,type){const u=URL.createObjectURL(new Blob([bytes],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),3000);}
+function b64(a){return btoa(Array.from(new Uint8Array(a),x=>String.fromCharCode(x)).join(''));}
+function un64(s){return Uint8Array.from(atob(s),x=>x.charCodeAt(0));}
+async function key5(p,s){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(p),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:s,iterations:600000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+async function seal5(value,p){if(p.length<12)throw Error('Password: 12 characters minimum');const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},await key5(p,salt),new TextEncoder().encode(JSON.stringify(value)));return {format:'MSL5-AES-GCM',salt:b64(salt),iv:b64(iv),cipher:b64(cipher)};}
+async function open5(v,p){if(v.format!=='MSL5-AES-GCM')throw Error('Format');return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:un64(v.iv)},await key5(p,un64(v.salt)),un64(v.cipher))));}
+function vault5(){return Array.isArray(data.adminVault)?data.adminVault:[];}
+async function addDoc5(){try{const f=document.getElementById('doc5').files[0],p=document.getElementById('pass5').value;if(!f||f.size>1000000||!['application/pdf','image/jpeg','image/png'].includes(f.type))throw Error('PDF / JPG / PNG, max. 1 MB');const sealed=await seal5({name:f.name,type:f.type,bytes:b64(await f.arrayBuffer())},p);const old=data.adminVault;data.adminVault=[...vault5(),sealed];if(!save()){data.adminVault=old;return;}show('documents5');}catch(e){alert(e.message);}}
+async function getDoc5(i){try{const v=await open5(vault5()[i],document.getElementById('pass5').value);if(!['application/pdf','image/jpeg','image/png'].includes(v.type))throw Error();download5(un64(v.bytes),v.name,v.type);}catch(e){alert('Document inaccessible / Cannot decrypt');}}
+function delDoc5(i){if(!confirm('Supprimer / Delete?'))return;const old=data.adminVault;data.adminVault=vault5().filter((_,j)=>i!==j);if(save())show('documents5');else data.adminVault=old;}
+async function export5(){try{download5(JSON.stringify(await seal5(data,document.getElementById('pass5').value)),'msl5-encrypted-'+today()+'.json','application/json');}catch(e){alert(e.message);}}
+async function restore5(){try{const f=document.getElementById('restore5').files[0];const v=await open5(JSON.parse(await f.text()),document.getElementById('pass5').value);if(!['sessions','photos','expenses','agenda'].every(k=>Array.isArray(v[k]))||!v.photos.every(p=>typeof p.image==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p.image)))throw Error();if(!confirm('Remplacer les données / Replace data?'))return;const old=data;data=v;if(save())show('home');else data=old;}catch(e){alert('Sauvegarde invalide ou mot de passe incorrect / Invalid backup or password');}}
+const prev5=show;show=function(page){if(!['documents5','security5','report5'].includes(page)){prev5(page);return;}currentPage=page;const pw='<label>'+al[4]+'</label><input id="pass5" type="password" autocomplete="off">';if(page==='documents5'){main.innerHTML='<section><h2>'+al[0]+'</h2><p>PDF / JPG / PNG — 1 MB max. AES-GCM.</p>'+pw+'<input id="doc5" type="file" accept="application/pdf,image/jpeg,image/png"><button onclick="addDoc5()">'+al[3]+'</button>'+vault5().map((_,i)=>'<article>Document '+(i+1)+' <button onclick="getDoc5('+i+')">↓</button> <button onclick="delDoc5('+i+')">×</button></article>').join('')+'</section>';}else if(page==='security5'){main.innerHTML='<section><h2>'+al[1]+'</h2><p>AES-256-GCM · PBKDF2 · 600 000</p>'+pw+'<button onclick="export5()">'+al[5]+'</button><input id="restore5" type="file" accept=".json"><button onclick="restore5()">'+al[6]+'</button><p>Les données ordinaires restent non chiffrées dans le navigateur. Sans mot de passe, aucune récupération des fichiers chiffrés.</p></section>';}else{main.innerHTML='<section><h2>'+al[2]+'</h2><h3>Budget</h3>'+data.expenses.map(e=>'<p>'+esc(e.date)+' — '+esc(e.label)+' — '+esc(e.amount??e.cost??'')+'</p>').join('')+'<h3>Agenda</h3>'+data.agenda.map(e=>'<p>'+esc(e.date)+' — '+esc(e.label)+'</p>').join('')+'<button onclick="window.print()">PDF / Print</button></section>';}translateUI();};
+for(const [i,p] of ['documents5','security5','report5'].entries()){const b=document.createElement('button');b.textContent=al[i];b.onclick=()=>show(p);document.querySelector('nav').append(b);}
 
 show('home');
 </script>
