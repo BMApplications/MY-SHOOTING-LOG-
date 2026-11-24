@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Shooting Log 3.3</title>
+<title>My Shooting Log 3.4</title>
 <style>
 *{box-sizing:border-box}
 body{margin:auto;max-width:900px;padding:18px;background:#192522;color:#fff;font:16px Arial,sans-serif}
@@ -24,12 +24,12 @@ footer{text-align:center;margin:25px 0}
 dialog{background:#293c35;color:white;border:1px solid #72847a;border-radius:14px;max-width:95vw;max-height:95vh}dialog img{max-height:75vh;object-fit:contain;cursor:zoom-in} .actions{display:flex;gap:8px;flex-wrap:wrap} @media print{.actions,footer{display:none} article{break-inside:avoid} small{color:black}}
 .calendarGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center;margin:12px 0}.day{background:#192522;border-radius:5px;padding:8px 2px}.day small{color:#efb27b;display:block}
 nav button{flex:1 1 auto} .avatar{width:100px;height:100px;object-fit:cover;border-radius:50%}.day.today{outline:2px solid #efb27b}.day.event{background:#36534a}.summary{color:#efb27b;font-weight:bold}.actions{align-items:center}@media(max-width:450px){body{padding:12px}section,article{padding:12px}.metric{font-size:24px}nav button{padding:10px}}
-</style>
-</head>
+html.light body{background:#f4f2ed;color:#20332c}html.light section,html.light article,html.light dialog{background:#fff;color:#20332c}html.light h1,html.light h2,html.light .metric,html.light .summary{color:#815021}html.light input,html.light select,html.light textarea{background:#fff;color:#20332c}html.light small{color:#40574c}.brand{display:flex;align-items:center;gap:12px}.brand img{width:56px;height:56px;margin:0}.brand h1{font-size:clamp(24px,6vw,40px)}@media print{.settings{display:none}}</style>
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#192522"></head>
 <body>
-<h1>MY SHOOTING LOG</h1>
-<p>Version 3.3 — Mobile Edition</p>
-<nav>
+<div class="brand"><img src="icon-192.png" alt=""><h1>MY SHOOTING LOG</h1></div>
+<p>Version 3.4 — Smart Edition</p>
+<div class="actions settings"><button onclick="toggleTheme()">Thème clair / sombre</button><button onclick="installApp()">Installer</button></div><nav>
 <button onclick="show('home')">Accueil</button>
 <button onclick="show('session')">Séance</button>
 <button onclick="show('history')">Historique</button>
@@ -188,7 +188,7 @@ ${[...data.agenda].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>`<article>${
  if(page==='profile'){
  const p=data.profile||{};
  main.innerHTML=`<section><h2>Mon profil personnel</h2>${avatar(p)}<form onsubmit="saveProfile(event)"><label>Prénom</label><input name="first" value="${esc(p.first)}"><label>Nom</label><input name="last" value="${esc(p.last)}"><label>E-mail (facultatif)</label><input type="email" name="email" value="${esc(p.email)}"><label>Photographie de profil</label><input type="file" accept="image/*" onchange="profileImage(this)"><button type="button" onclick="clearAvatar()">Retirer la photo</button><br><br><button class="primary">Enregistrer mon profil</button></form><small>Informations locales et facultatives. Les sauvegardes ne sont pas chiffrées.</small></section><section><h2>Mes affiliations personnelles</h2><div id="affiliations"></div><form id="affForm" onsubmit="saveAff(event)"><label>Nom du club ou organisme</label><input name="club" list="personalClubs" value="${esc(p.club)}" required><datalist id="personalClubs">${[...new Set([p.club,...affiliations().map(a=>a.club)].filter(Boolean))].map(c=>`<option value="${esc(c)}"></option>`).join('')}</datalist><label>Fédération</label><input name="federation"><label>Numéro officiel du club</label><input name="clubNumber"><label>Numéro personnel de membre</label><input name="memberNumber"><label>Numéro d’affiliation à la fédération</label><input name="federationNumber"><label>Renouvellement</label><input name="renewal" type="date"><label>Cotisation annuelle (€)</label><input name="fee" type="number" min="0" step="0.01"><br><br><button class="primary">Enregistrer l’affiliation</button><button type="button" onclick="show('profile')">Annuler</button></form></section>`;pendingAvatar=p.avatar||'';affEdit=null;renderAff();}
- if(page==='help'){main.innerHTML=`<section><h2>Mode d’emploi</h2><p>Mon profil : personnalisez vos coordonnées et vos affiliations. Enregistrez chaque formulaire séparément.</p><p>Budget : sélectionnez une année ou un mois, ajoutez ou modifiez vos dépenses.</p><p>Agenda : consultez les échéances et cliquez sur un jour pour en afficher le détail.</p><p>Sauvegarde : exportez régulièrement un fichier JSON. Pour changer d’appareil, restaurez ce fichier. La restauration remplace les données actuelles.</p><p>Sur smartphone, utilisez le menu du navigateur pour ajouter un raccourci à l’écran d’accueil, si disponible.</p><p>Les données restent dans ce navigateur. Évitez la navigation privée et conservez vos sauvegardes hors de l’appareil.</p></section>`;}
+ if(page==='help'){main.innerHTML=`<section><h2>Mode d’emploi</h2><p>Mon profil : personnalisez vos coordonnées et vos affiliations. Enregistrez chaque formulaire séparément.</p><p>Budget : sélectionnez une année ou un mois, ajoutez ou modifiez vos dépenses.</p><p>Agenda : consultez les échéances et cliquez sur un jour pour en afficher le détail.</p><p>Sauvegarde : exportez régulièrement un fichier JSON. Pour changer d’appareil, restaurez ce fichier. La restauration remplace les données actuelles.</p><p>Sur smartphone, utilisez le menu du navigateur pour ajouter un raccourci à l’écran d’accueil, si disponible.</p><p>Installation : utilisez le bouton Installer. Le mode hors connexion est disponible après une première visite en ligne et la mise en cache des fichiers. Les sauvegardes JSON ne sont pas chiffrées. </p><p>Les données restent dans ce navigateur. Évitez la navigation privée et conservez vos sauvegardes hors de l’appareil.</p></section>`;}
 if(page==='backup'){
 main.innerHTML=`
 <section><h2>Sauvegarde</h2>
@@ -254,7 +254,7 @@ function exportData(){
 const url=URL.createObjectURL(new Blob(
 [JSON.stringify(data)],{type:'application/json'}));
 const a=document.createElement('a');
-a.href=url;a.download='my-shooting-log-3.3-'+today()+'.json';
+a.href=url;a.download='my-shooting-log-3.4-'+today()+'.json';
 a.click();
 setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -296,6 +296,11 @@ function editExpense(i){expenseEdit=i;const f=document.getElementById('expenseFo
 function saveExpense(e){e.preventDefault();const old=data.expenses.slice(),v=Object.fromEntries(new FormData(e.target));if(expenseEdit===null)data.expenses.unshift({...v,id:crypto.randomUUID()});else data.expenses[expenseEdit]={...data.expenses[expenseEdit],...v};if(save()){budgetYear=v.date.slice(0,4);budgetMonth='';show('budget');}else data.expenses=old;}
 function deleteExpense(i){if(!confirm('Supprimer cette dépense ?'))return;const old=data.expenses.slice();data.expenses.splice(i,1);if(save())show('budget');else data.expenses=old;}
 
+function toggleTheme(){const light=document.documentElement.classList.toggle('light');try{localStorage.setItem('mslTheme',light?'light':'dark')}catch(e){}}
+try{document.documentElement.classList.toggle('light',localStorage.getItem('mslTheme')==='light')}catch(e){}
+let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});
+async function installApp(){if(installPrompt){await installPrompt.prompt();installPrompt=null;}else alert('Dans Chrome, ouvrez le menu puis Installer ou Ajouter à l’écran d’accueil. Sur iPhone, utilisez Safari, Partager, Sur l’écran d’accueil.');}
+if('serviceWorker' in navigator && location.protocol==='https:'){navigator.serviceWorker.register('./sw.js').catch(console.warn);}
 show('home');
 </script>
 </body>
