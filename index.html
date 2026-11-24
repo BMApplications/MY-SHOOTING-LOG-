@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Shooting Log 3.0</title>
+<style>
+body {
+  background: #192522;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 25px;
+}
+h1 { color: #efb27b; }
+section {
+  background: #293c35;
+  padding: 25px;
+  border-radius: 15px;
+}
+img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+<h1>MY SHOOTING LOG</h1>
+<p>Version 3.0 - My Target Edition</p>
+<section>
+<h2>Test photographique</h2>
+<p>Importer une photographie</p>
+<input type="file" accept="image/*"
+ onchange="afficher(this)">
+<img id="photo">
+</section>
+<script>
+function afficher(input) {
+  if (input.files.length) {
+    document.getElementById('photo').src =
+      URL.createObjectURL(input.files[0]);
+  }
+}
+</script>
+</body>
+</html>
