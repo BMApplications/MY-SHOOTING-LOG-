@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Shooting Log 3.4</title>
+<title>My Shooting Log 3.6</title>
 <style>
 *{box-sizing:border-box}
 body{margin:auto;max-width:900px;padding:18px;background:#192522;color:#fff;font:16px Arial,sans-serif}
@@ -28,8 +28,8 @@ html.light body{background:#f4f2ed;color:#20332c}html.light section,html.light a
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#192522"></head>
 <body>
 <div class="brand"><img src="icon-192.png" alt=""><h1>MY SHOOTING LOG</h1></div>
-<p>Version 3.4 — Smart Edition</p>
-<div class="actions settings"><button onclick="toggleTheme()">Thème clair / sombre</button><button onclick="installApp()">Installer</button></div><nav>
+<p>Version 3.6 — Smart Memory Edition</p>
+<div class="actions settings"><button onclick="toggleTheme()">Thème clair / sombre</button><button onclick="installApp()">Installer</button></div><label for="language">Langue / Language / Taal</label><select id="language" onchange="setLanguage(this.value)"><option value="fr">Français</option><option value="en">English</option><option value="nl">Nederlands</option></select><nav>
 <button onclick="show('home')">Accueil</button>
 <button onclick="show('session')">Séance</button>
 <button onclick="show('history')">Historique</button>
@@ -37,7 +37,7 @@ html.light body{background:#f4f2ed;color:#20332c}html.light section,html.light a
 <button onclick="show('budget')">Budget</button>
 <button onclick="show('agenda')">Agenda</button>
 <button onclick="show('profile')">Mon profil</button>
-<button onclick="show('backup')">Sauvegarde</button><button onclick="show('help')">Aide</button>
+<button onclick="show('backup')">Sauvegarde</button><button onclick="show('help')">Aide</button><button onclick="show('about')">À propos / About / Over</button>
 </nav>
 <main id="main"></main><dialog id="viewer"><button onclick="this.parentElement.close()">Fermer</button><div style="overflow:auto"><img id="largePhoto" alt="Photographie agrandie" onclick="this.style.maxHeight=this.style.maxHeight==='none'?'75vh':'none';this.style.maxWidth=this.style.maxWidth==='none'?'100%':'none'"></div></dialog>
 <footer><small>My Shooting Log — 2026</small></footer>
@@ -170,7 +170,7 @@ ${data.photos.map((p,i)=>`<article class="photoEntry" data-category="${esc(p.cat
 source=null;angle=0;
 }
 if(page==='budget'){
- main.innerHTML=`<section><h2>Budget</h2><label>Année</label><input id="budgetYear" type="number" min="1900" max="2200" value="${budgetYear}" onchange="budgetYear=this.value;renderBudget()"><label>Mois (facultatif)</label><select id="budgetMonth" onchange="budgetMonth=this.value;renderBudget()"><option value="">Tous les mois</option>${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}" ${budgetMonth===String(i+1).padStart(2,'0')?'selected':''}>${new Date(2020,i,1).toLocaleDateString('fr',{month:'long'})}</option>`).join('')}</select><div id="budgetResults"></div></section><section><h2 id="expenseTitle">Nouvelle dépense</h2><form id="expenseForm" onsubmit="saveExpense(event)"><label>Date</label><input name="date" type="date" value="${today()}" required><label>Libellé</label><input name="label" required><label>Montant (€)</label><input name="amount" type="number" min="0" step="0.01" required><br><br><button class="primary">Enregistrer</button><button type="button" onclick="expenseEdit=null;show('budget')">Annuler</button></form></section>`;expenseEdit=null;renderBudget();}
+ main.innerHTML=`<section><h2>Budget</h2><label>Année</label><input id="budgetYear" type="number" min="1900" max="2200" value="${budgetYear}" onchange="budgetYear=this.value;renderBudget()"><label>Mois (facultatif)</label><select id="budgetMonth" onchange="budgetMonth=this.value;renderBudget()"><option value="">Tous les mois</option>${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}" ${budgetMonth===String(i+1).padStart(2,'0')?'selected':''}>${new Date(2020,i,1).toLocaleDateString(document.documentElement.lang,{month:'long'})}</option>`).join('')}</select><div id="budgetResults"></div></section><section><h2 id="expenseTitle">Nouvelle dépense</h2><form id="expenseForm" onsubmit="saveExpense(event)"><label>Date</label><input name="date" type="date" value="${today()}" required><label>Libellé</label><input name="label" required><label>Montant (€)</label><input name="amount" type="number" min="0" step="0.01" required><br><br><button class="primary">Enregistrer</button><button type="button" onclick="expenseEdit=null;show('budget')">Annuler</button></form></section>`;expenseEdit=null;renderBudget();}
 if(page==='agenda'){
 main.innerHTML=`
 <section><h2>Agenda administratif</h2><div id="calendar"></div>
@@ -254,7 +254,7 @@ function exportData(){
 const url=URL.createObjectURL(new Blob(
 [JSON.stringify(data)],{type:'application/json'}));
 const a=document.createElement('a');
-a.href=url;a.download='my-shooting-log-3.4-'+today()+'.json';
+a.href=url;a.download='my-shooting-log-3.6-'+today()+'.json';
 a.click();
 setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -278,7 +278,7 @@ function saveProfile(e){e.preventDefault();const old=data.profile;data.profile={
 function removeAgenda(i){if(!confirm('Supprimer cette échéance ?'))return;const old=data.agenda.slice();data.agenda.splice(i,1);if(save())show('agenda');else data.agenda=old;}
 let calendarMonth=new Date();calendarMonth.setDate(1);
 function moveMonth(n){calendarMonth.setMonth(calendarMonth.getMonth()+n);renderCalendar();}
-function renderCalendar(){const el=document.getElementById('calendar');if(!el)return;const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),start=(new Date(y,m,1).getDay()+6)%7,end=new Date(y,m+1,0).getDate();let cells=['L','M','M','J','V','S','D'].map(x=>'<b>'+x+'</b>').join('')+'<span></span>'.repeat(start);for(let d=1;d<=end;d++){const key=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const entries=allDeadlines().filter(a=>a.date===key);cells+='<button type="button" onclick="calendarDetails(\''+key+'\')" class="day '+(key===today()?'today ':'')+(entries.length?'event':'')+'" title="'+esc(entries.map(a=>a.label).join(', '))+'">'+d+(entries.length?'<small> • '+entries.length+'</small>':'')+'</button>';}el.innerHTML='<div class="actions"><button type="button" onclick="moveMonth(-1)">‹</button><strong>'+calendarMonth.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})+'</strong><button type="button" onclick="moveMonth(1)">›</button></div><div class="calendarGrid">'+cells+'</div><div id="dayDetails"></div>';}
+function renderCalendar(){const el=document.getElementById('calendar');if(!el)return;const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),start=(new Date(y,m,1).getDay()+6)%7,end=new Date(y,m+1,0).getDate();let cells=['L','M','M','J','V','S','D'].map(x=>'<b>'+x+'</b>').join('')+'<span></span>'.repeat(start);for(let d=1;d<=end;d++){const key=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const entries=allDeadlines().filter(a=>a.date===key);cells+='<button type="button" onclick="calendarDetails(\''+key+'\')" class="day '+(key===today()?'today ':'')+(entries.length?'event':'')+'" title="'+esc(entries.map(a=>a.label).join(', '))+'">'+d+(entries.length?'<small> • '+entries.length+'</small>':'')+'</button>';}el.innerHTML='<div class="actions"><button type="button" onclick="moveMonth(-1)">‹</button><strong>'+calendarMonth.toLocaleDateString(document.documentElement.lang,{month:'long',year:'numeric'})+'</strong><button type="button" onclick="moveMonth(1)">›</button></div><div class="calendarGrid">'+cells+'</div><div id="dayDetails"></div>';}
 let pendingAvatar='',affEdit=null,expenseEdit=null,budgetYear=String(new Date().getFullYear()),budgetMonth='';
 function avatar(p){return p&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p.avatar||'')?`<img class="avatar" src="${p.avatar}" alt="Photo de profil">`:'';}
 function profileImage(input){const file=input.files[0];if(!file)return;const url=URL.createObjectURL(file),im=new Image();im.onload=()=>{const c=document.createElement('canvas'),scale=Math.min(1,300/Math.max(im.width,im.height));c.width=Math.max(1,Math.round(im.width*scale));c.height=Math.max(1,Math.round(im.height*scale));c.getContext('2d').drawImage(im,0,0,c.width,c.height);pendingAvatar=c.toDataURL('image/jpeg',.8);URL.revokeObjectURL(url);alert('Photo prête. Enregistrez votre profil.');};im.onerror=()=>{URL.revokeObjectURL(url);alert('Photo illisible');};im.src=url;}
@@ -301,6 +301,30 @@ try{document.documentElement.classList.toggle('light',localStorage.getItem('mslT
 let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});
 async function installApp(){if(installPrompt){await installPrompt.prompt();installPrompt=null;}else alert('Dans Chrome, ouvrez le menu puis Installer ou Ajouter à l’écran d’accueil. Sur iPhone, utilisez Safari, Partager, Sur l’écran d’accueil.');}
 if('serviceWorker' in navigator && location.protocol==='https:'){navigator.serviceWorker.register('./sw.js').catch(console.warn);}
+const dictionary = {"Accueil": ["Home", "Start"], "Séance": ["Session", "Sessie"], "Historique": ["History", "Geschiedenis"], "Photos": ["Photos", "Foto’s"], "Budget": ["Budget", "Budget"], "Agenda": ["Calendar", "Agenda"], "Mon profil": ["My profile", "Mijn profiel"], "Sauvegarde": ["Backup", "Back-up"], "Aide": ["Help", "Help"], "Thème clair / sombre": ["Light / dark theme", "Licht / donker thema"], "Installer": ["Install", "Installeren"], "Fermer": ["Close", "Sluiten"], "Séances": ["Sessions", "Sessies"], "Dépenses": ["Expenses", "Uitgaven"], "Échéances": ["Deadlines", "Termijnen"], "Nouvelle séance": ["New session", "Nieuwe sessie"], "Ajouter une photo": ["Add photo", "Foto toevoegen"], "Date": ["Date", "Datum"], "Heure": ["Time", "Tijd"], "Club": ["Club", "Club"], "Observations": ["Notes", "Notities"], "Enregistrer": ["Save", "Opslaan"], "Modifier": ["Edit", "Bewerken"], "Supprimer": ["Delete", "Verwijderen"], "Annuler": ["Cancel", "Annuleren"], "Année": ["Year", "Jaar"], "Mois (facultatif)": ["Month (optional)", "Maand (optioneel)"], "Tous les mois": ["All months", "Alle maanden"], "Nouvelle dépense": ["New expense", "Nieuwe uitgave"], "Libellé": ["Description", "Omschrijving"], "Montant (€)": ["Amount (€)", "Bedrag (€)"], "Agenda administratif": ["Administrative calendar", "Administratieve agenda"], "Échéance": ["Deadline", "Vervaldatum"], "Catégorie": ["Category", "Categorie"], "Ajouter": ["Add", "Toevoegen"], "Mon profil personnel": ["My personal profile", "Mijn persoonlijk profiel"], "Prénom": ["First name", "Voornaam"], "Nom": ["Last name", "Achternaam"], "E-mail (facultatif)": ["Email (optional)", "E-mail (optioneel)"], "Photographie de profil": ["Profile photo", "Profielfoto"], "Retirer la photo": ["Remove photo", "Foto verwijderen"], "Enregistrer mon profil": ["Save my profile", "Mijn profiel opslaan"], "Mes affiliations personnelles": ["My memberships", "Mijn lidmaatschappen"], "Nom du club ou organisme": ["Club or organisation name", "Naam club of organisatie"], "Fédération": ["Federation", "Federatie"], "Numéro officiel du club": ["Official club number", "Officieel clubnummer"], "Numéro personnel de membre": ["Personal membership number", "Persoonlijk lidnummer"], "Numéro d’affiliation à la fédération": ["Federation membership number", "Federatielidnummer"], "Renouvellement": ["Renewal", "Verlenging"], "Cotisation annuelle (€)": ["Annual fee (€)", "Jaarbijdrage (€)"], "Enregistrer l’affiliation": ["Save membership", "Lidmaatschap opslaan"], "Mode d’emploi": ["User guide", "Handleiding"], "Exporter": ["Export", "Exporteren"], "Restaurer une sauvegarde": ["Restore backup", "Back-up herstellen"], "Prochaines échéances": ["Upcoming deadlines", "Komende termijnen"], "Aucune échéance à venir.": ["No upcoming deadlines.", "Geen komende termijnen."], "Imprimer / PDF": ["Print / PDF", "Afdrukken / PDF"], "Autre": ["Other", "Andere"], "Cotisation": ["Membership fee", "Lidgeld"], "Document administratif": ["Administrative document", "Administratief document"], "Rendez-vous": ["Appointment", "Afspraak"], "Conservez une copie de vos données et photographies.": ["Keep a copy of your data and photos.", "Bewaar een kopie van uw gegevens en foto’s."], "Informations locales et facultatives. Les sauvegardes ne sont pas chiffrées.": ["Optional local information. Backups are not encrypted.", "Optionele lokale gegevens. Back-ups zijn niet versleuteld."]};
+let lang='fr';try{lang=localStorage.getItem('mslLanguage')||'fr'}catch(e){}if(!['fr','en','nl'].includes(lang))lang='fr';
+let currentPage='home';const originalShow=show;
+function translateUI(){document.documentElement.lang=lang;document.getElementById('language').value=lang;if(lang==='fr')return;const nodes=document.querySelectorAll('nav button,.settings button,main label,main button,main h2,main h3,main small,main p,main option,#viewer button');for(const el of nodes){if(el.children.length||el.closest('article')&&!el.matches('button'))continue;const key=el.textContent.trim();if(dictionary[key]){if(el.tagName==='OPTION'&&!el.hasAttribute('value'))el.value=key;el.textContent=dictionary[key][lang==='en'?0:1];}}}
+const guide={fr:'Les données restent dans ce navigateur. Exportez régulièrement une sauvegarde. La restauration remplace les données actuelles. Les fichiers JSON ne sont pas chiffrés.',en:'Data stays in this browser. Export backups regularly. Restoring replaces current data. JSON files are not encrypted.',nl:'Gegevens blijven in deze browser. Exporteer regelmatig een back-up. Herstellen vervangt de huidige gegevens. JSON-bestanden zijn niet versleuteld.'};
+show=function(page){currentPage=page;if(page==='about'){main.innerHTML='<section><h2>MY SHOOTING LOG 3.6</h2><p>Smart Memory Edition — Benoît Moureaux</p><p>'+guide[lang]+'</p></section>';}else if(page==='help'&&lang!=='fr'){main.innerHTML='<section><h2>'+ (lang==='en'?'User guide':'Handleiding')+'</h2><p>'+guide[lang]+'</p><p>'+ (lang==='en'?'Profile: save your details and memberships separately. Budget: add expenses and filter by month. Calendar: view deadlines. Install: use your browser menu.':'Profiel: sla uw gegevens en lidmaatschappen afzonderlijk op. Budget: voeg uitgaven toe en filter per maand. Agenda: bekijk vervaldata. Installeren: gebruik het browsermenu.')+'</p></section>';}else originalShow(page);translateUI();};
+function setLanguage(v){if(!['fr','en','nl'].includes(v))return;if(!confirm('Changer de langue ? Les modifications non enregistrées seront perdues. / Change language? Unsaved changes will be lost. / Taal wijzigen? Niet-opgeslagen wijzigingen gaan verloren.')){document.getElementById('language').value=lang;return;}try{localStorage.setItem('mslLanguage',v)}catch(e){}location.reload();}
+
+const memoryFields = {
+ club: {label:['Clubs et organismes','Clubs and organisations','Clubs en organisaties'], sources:()=>[data.profile?.club,...affiliations().map(a=>a.club),...data.sessions.map(a=>a.club)]},
+ federation: {label:['Fédérations','Federations','Federaties'],sources:()=>affiliations().map(a=>a.federation)},
+ expense: {label:['Libellés de dépenses','Expense descriptions','Uitgavenomschrijvingen'],sources:()=>data.expenses.map(a=>a.label)},
+ deadline: {label:['Échéances','Deadlines','Termijnen'],sources:()=>data.agenda.map(a=>a.label)}
+};
+function memoryValues(key){const seen=new Map();for(const raw of memoryFields[key].sources()){if(typeof raw!=='string')continue;const v=raw.trim();if(v&&!seen.has(v.toLocaleLowerCase()))seen.set(v.toLocaleLowerCase(),v);}return [...seen.values()].sort((a,b)=>a.localeCompare(b,lang,{sensitivity:'base'}));}
+function attachMemory(){
+ const fields=[['input[name=club]','club'],['#affForm input[name=federation]','federation'],['#expenseForm input[name=label]','expense'],['form[onsubmit*="agenda"] input[name=label]','deadline']];
+ for(const [selector,key] of fields){for(const input of main.querySelectorAll(selector)){
+ const list=document.createElement('datalist');list.id='memory-'+key;for(const v of memoryValues(key)){const option=document.createElement('option');option.value=v;list.append(option);}input.setAttribute('list',list.id);input.after(list);
+ const hint=document.createElement('small');hint.textContent=({fr:'Choisissez une valeur connue ou saisissez-en une nouvelle.',en:'Choose a saved value or enter a new one.',nl:'Kies een opgeslagen waarde of voer een nieuwe in.'})[lang];list.after(hint);
+ }}
+}
+const show35=show;show=function(page){show35(page);attachMemory();};
+
 show('home');
 </script>
 </body>
