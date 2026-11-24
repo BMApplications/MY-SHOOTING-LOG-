@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Shooting Log 3.0</title>
+<title>My Shooting Log 3.1</title>
 <style>
 *{box-sizing:border-box}
 body{margin:auto;max-width:900px;padding:18px;background:#192522;color:#fff;font:16px Arial,sans-serif}
@@ -21,11 +21,12 @@ small{color:#b9c8c1}
 .metric{font-size:30px;color:#efb27b}
 footer{text-align:center;margin:25px 0}
 @media print{nav,button,form{display:none}body,section,article{background:white;color:black}h1,h2{color:black}}
+dialog{background:#293c35;color:white;border:1px solid #72847a;border-radius:14px;max-width:95vw;max-height:95vh}dialog img{max-height:75vh;object-fit:contain;cursor:zoom-in} .actions{display:flex;gap:8px;flex-wrap:wrap} @media print{.actions,footer{display:none} article{break-inside:avoid} small{color:black}}
 </style>
 </head>
 <body>
 <h1>MY SHOOTING LOG</h1>
-<p>Version 3.0 — My Target Edition</p>
+<p>Version 3.1 — Score & Archive Edition</p>
 <nav>
 <button onclick="show('home')">Accueil</button>
 <button onclick="show('session')">Séance</button>
@@ -35,7 +36,7 @@ footer{text-align:center;margin:25px 0}
 <button onclick="show('agenda')">Agenda</button>
 <button onclick="show('backup')">Sauvegarde</button>
 </nav>
-<main id="main"></main>
+<main id="main"></main><dialog id="viewer"><button onclick="this.parentElement.close()">Fermer</button><div style="overflow:auto"><img id="largePhoto" alt="Photographie agrandie" onclick="this.style.maxHeight=this.style.maxHeight==='none'?'75vh':'none';this.style.maxWidth=this.style.maxWidth==='none'?'100%':'none'"></div></dialog>
 <footer><small>My Shooting Log — 2026</small></footer>
 <script>
 const main=document.getElementById('main');
@@ -65,7 +66,9 @@ return d.getFullYear()+'-'+
 String(d.getMonth()+1).padStart(2,'0')+'-'+
 String(d.getDate()).padStart(2,'0');
 }
+let editing=null;
 function show(page){
+if(page!=='session')editing=null;
 if(page==='home'){
 main.innerHTML=`
 <div class="grid">
@@ -99,7 +102,7 @@ main.innerHTML=`
 <label>Durée en minutes</label>
 <input name="duration" type="number" min="0">
 <label>Score déclaré</label>
-<input name="score">
+<input name="score"><label>Addition de résultats déclarés (facultatif)</label><input id="scoreParts" placeholder="Ex. 12 + 15 + 18"><button type="button" onclick="sumScore()">Calculer le total</button>
 <label>Observations</label>
 <textarea name="notes" rows="4"></textarea>
 <label>Incidents signalés</label>
@@ -109,10 +112,11 @@ main.innerHTML=`
 <br><br>
 <button class="primary">Enregistrer</button>
 </form></section>`;
+if(editing!==null){const f=main.querySelector('form');const item=data.sessions[editing];for(const el of f.elements){if(el.name&&item[el.name]!=null)el.value=item[el.name];}main.querySelector('h2').textContent='Modifier la séance';}
 }
 if(page==='history'){
 main.innerHTML='<h2>Historique</h2><button onclick="window.print()">Imprimer / PDF</button>'+
-data.sessions.map(s=>`<article>
+data.sessions.map((s,i)=>`<article id="session-${i}">
 <strong>${esc(s.date)} — ${esc(s.time)}</strong>
 <p>${esc(s.club)}</p>
 <p>${esc(s.equipment)} — ${esc(s.calibre)}</p>
@@ -123,7 +127,7 @@ data.sessions.map(s=>`<article>
 <p>${esc(s.incident)}</p>
 <p>${esc(s.instructor)}</p>
 ${data.photos.filter(p=>p.session===s.id).map(p=>`<img src="${p.image}"><p>${esc(p.note)}</p>`).join('')}
-</article>`).join('');
+<div class="actions"><button onclick="editSession(${i})">Modifier</button><button onclick="deleteSession(${i})">Supprimer</button><button onclick="printSession(${i})">Fiche PDF</button></div></article>`).join('');
 }
 if(page==='photos'){
 main.innerHTML=`
@@ -158,8 +162,8 @@ ${data.sessions.map(s=>`<option value="${esc(s.id)}">${esc(s.date)} — ${esc(s.
 <br><br>
 <button class="primary" onclick="archivePhoto()">Archiver la photo</button>
 </section>
-<h2>Photographies enregistrées</h2>
-${data.photos.map(p=>`<article><small>${esc(p.date)} — ${esc(p.category || 'Sans catégorie')}</small><br><img src="${p.image}"><p>${esc(p.note)}</p></article>`).join('')}`;
+<h2>Photographies enregistrées</h2><label>Filtrer par catégorie</label><select onchange="filterPhotos(this.value)"><option value="">Toutes</option>${[...new Set(data.photos.map(p=>p.category||'Sans catégorie'))].map(c=>`<option>${esc(c)}</option>`).join('')}</select>
+${data.photos.map((p,i)=>`<article class="photoEntry" data-category="${esc(p.category||'Sans catégorie')}"><small>${esc(p.date)} — ${esc(p.category || 'Sans catégorie')}</small><br><img src="${p.image}" onclick="viewPhoto(${i})" alt="Photographie archivée"><p>${esc(p.note)}</p><button onclick="viewPhoto(${i})">Agrandir</button> </article>`).join('')}`;
 source=null;angle=0;
 }
 if(page==='budget'){
@@ -200,11 +204,9 @@ main.innerHTML=`
 }
 function add(e,key,page){
 e.preventDefault();
-data[key].unshift({
-...Object.fromEntries(new FormData(e.target)),
-id:crypto.randomUUID()
-});
-save();show(page);
+const old=data[key].slice();const fields=Object.fromEntries(new FormData(e.target));
+if(key==='sessions'&&editing!==null){data[key][editing]={...data[key][editing],...fields};}else{data[key].unshift({...fields,id:crypto.randomUUID()});}
+if(save()){editing=null;show(page);}else{data[key]=old;}
 }
 let source=null,angle=0;
 function loadPhoto(input){
@@ -249,8 +251,7 @@ note:document.getElementById('comment').value,
 category:document.getElementById('photoCategory').value,  
 image:document.getElementById('preview').toDataURL('image/jpeg',0.75)
 });
-if(save())alert('Photographie enregistrée.');
-show('photos');
+if(save()){alert('Photographie enregistrée.');show('photos');}else{data.photos.shift();}
 }
 function exportData(){
 const url=URL.createObjectURL(new Blob(
@@ -266,10 +267,16 @@ const v=JSON.parse(await input.files[0].text());
 if(!['sessions','photos','expenses','agenda'].every(k=>Array.isArray(v[k])))throw Error();
 if(!v.photos.every(p=>typeof p.image==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p.image)))throw Error();
 if(confirm('Remplacer les données actuelles ?')){
-data=v;save();show('home');
+const old=data;data=v;if(save())show('home');else data=old;
 }
 }catch(e){alert('Sauvegarde invalide.');}
 }
+function sumScore(){const v=document.getElementById('scoreParts').value.trim();if(!/^\d+(\s*\+\s*\d+)*$/.test(v)){alert('Saisissez des nombres séparés par +.');return;}main.querySelector('[name=score]').value=v.split('+').reduce((n,x)=>n+Number(x),0);}
+function editSession(i){editing=i;show('session');}
+function deleteSession(i){if(!confirm('Supprimer cette séance ? Les photos seront conservées.'))return;const old=data.sessions.slice();data.sessions.splice(i,1);if(save())show('history');else data.sessions=old;}
+function printSession(i){const items=[...main.querySelectorAll('article')];items.forEach(a=>{if(a.id!=='session-'+i)a.hidden=true;});try{window.print();}finally{items.forEach(a=>a.hidden=false);}}
+function viewPhoto(i){const img=document.getElementById('largePhoto');img.src=data.photos[i].image;img.style.maxHeight='75vh';img.style.maxWidth='100%';document.getElementById('viewer').showModal();}
+function filterPhotos(c){document.querySelectorAll('.photoEntry').forEach(a=>a.hidden=!!c&&a.dataset.category!==c);}
 show('home');
 </script>
 </body>
