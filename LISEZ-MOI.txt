@@ -1,4 +1,4 @@
-MY SHOOTING LOG 3.8 — Signature Edition (bêta)
+MY SHOOTING LOG 3.9 — Contact Edition (bêta)
 Extraire le ZIP et publier les cinq fichiers de l’application à la racine du dépôt GitHub Pages. Sauvegarder les données JSON avant la mise à jour.
 Les champs club, fédération, libellé de dépense et échéance proposent les valeurs des enregistrements existants. Une nouvelle valeur devient disponible après enregistrement. Les doublons sont ignorés dans les suggestions. Les suggestions sont recalculées depuis les données et incluses indirectement dans les sauvegardes. Pour retirer une suggestion, modifier ou supprimer les enregistrements correspondants. Les champs matériel et calibre restent inchangés. Aucun module d’analyse des impacts. Les traductions restent partielles. Les sauvegardes ne sont pas chiffrées.
 
