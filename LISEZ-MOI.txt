@@ -1,2 +1,3 @@
-MY SHOOTING LOG 6.2 — Final Beta
-Sauvegarder avant installation. Publier les cinq fichiers web. Corrections des sélecteurs administratifs, validation structurelle des sauvegardes et repli hors connexion. Matériel et calibre inchangés. Tests sur smartphone nécessaires.
+MY SHOOTING LOG 7.0 — International Edition
+Sauvegardez vos données avant mise à jour. Déployez les cinq fichiers web à la racine du dépôt. Traductions partielles, test mobile requis. Les rappels sont affichés dans l’application.
+© 2026 Benoît Moureaux — BM Applications
