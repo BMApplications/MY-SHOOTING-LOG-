@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Shooting Log 3.2</title>
+<title>My Shooting Log 3.3</title>
 <style>
 *{box-sizing:border-box}
 body{margin:auto;max-width:900px;padding:18px;background:#192522;color:#fff;font:16px Arial,sans-serif}
@@ -23,11 +23,12 @@ footer{text-align:center;margin:25px 0}
 @media print{nav,button,form{display:none}body,section,article{background:white;color:black}h1,h2{color:black}}
 dialog{background:#293c35;color:white;border:1px solid #72847a;border-radius:14px;max-width:95vw;max-height:95vh}dialog img{max-height:75vh;object-fit:contain;cursor:zoom-in} .actions{display:flex;gap:8px;flex-wrap:wrap} @media print{.actions,footer{display:none} article{break-inside:avoid} small{color:black}}
 .calendarGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center;margin:12px 0}.day{background:#192522;border-radius:5px;padding:8px 2px}.day small{color:#efb27b;display:block}
+nav button{flex:1 1 auto} .avatar{width:100px;height:100px;object-fit:cover;border-radius:50%}.day.today{outline:2px solid #efb27b}.day.event{background:#36534a}.summary{color:#efb27b;font-weight:bold}.actions{align-items:center}@media(max-width:450px){body{padding:12px}section,article{padding:12px}.metric{font-size:24px}nav button{padding:10px}}
 </style>
 </head>
 <body>
 <h1>MY SHOOTING LOG</h1>
-<p>Version 3.2 — Personal Edition</p>
+<p>Version 3.3 — Mobile Edition</p>
 <nav>
 <button onclick="show('home')">Accueil</button>
 <button onclick="show('session')">Séance</button>
@@ -36,7 +37,7 @@ dialog{background:#293c35;color:white;border:1px solid #72847a;border-radius:14p
 <button onclick="show('budget')">Budget</button>
 <button onclick="show('agenda')">Agenda</button>
 <button onclick="show('profile')">Mon profil</button>
-<button onclick="show('backup')">Sauvegarde</button>
+<button onclick="show('backup')">Sauvegarde</button><button onclick="show('help')">Aide</button>
 </nav>
 <main id="main"></main><dialog id="viewer"><button onclick="this.parentElement.close()">Fermer</button><div style="overflow:auto"><img id="largePhoto" alt="Photographie agrandie" onclick="this.style.maxHeight=this.style.maxHeight==='none'?'75vh':'none';this.style.maxWidth=this.style.maxWidth==='none'?'100%':'none'"></div></dialog>
 <footer><small>My Shooting Log — 2026</small></footer>
@@ -80,8 +81,8 @@ main.innerHTML=`
 <section>Échéances<div class="metric">${data.agenda.length}</div></section>
 </div>
 <section>
-<h2>Bienvenue${data.profile?.first ? ", "+esc(data.profile.first) : " dans votre carnet"}</h2>
-<button class="primary" onclick="show('session')">Nouvelle séance</button>
+${avatar(data.profile)}<h2>Bienvenue${data.profile?.first ? ", "+esc(data.profile.first) : " dans votre carnet"}</h2>
+${upcoming()}<button class="primary" onclick="show('session')">Nouvelle séance</button>
 <button onclick="show('photos')">Ajouter une photo</button>
 </section>`;
 }
@@ -169,19 +170,7 @@ ${data.photos.map((p,i)=>`<article class="photoEntry" data-category="${esc(p.cat
 source=null;angle=0;
 }
 if(page==='budget'){
-main.innerHTML=`
-<section><h2>Budget</h2>
-<form onsubmit="add(event,'expenses','budget')">
-<label>Date</label>
-<input name="date" type="date" value="${today()}" required>
-<label>Libellé</label>
-<input name="label" required>
-<label>Montant (€)</label>
-<input name="amount" type="number" min="0" step="0.01" required>
-<br><br><button class="primary">Ajouter</button>
-</form></section>
-${data.expenses.map(e=>`<article>${esc(e.date)} — ${esc(e.label)} — ${Number(e.amount).toFixed(2)} €</article>`).join('')}`;
-}
+ main.innerHTML=`<section><h2>Budget</h2><label>Année</label><input id="budgetYear" type="number" min="1900" max="2200" value="${budgetYear}" onchange="budgetYear=this.value;renderBudget()"><label>Mois (facultatif)</label><select id="budgetMonth" onchange="budgetMonth=this.value;renderBudget()"><option value="">Tous les mois</option>${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}" ${budgetMonth===String(i+1).padStart(2,'0')?'selected':''}>${new Date(2020,i,1).toLocaleDateString('fr',{month:'long'})}</option>`).join('')}</select><div id="budgetResults"></div></section><section><h2 id="expenseTitle">Nouvelle dépense</h2><form id="expenseForm" onsubmit="saveExpense(event)"><label>Date</label><input name="date" type="date" value="${today()}" required><label>Libellé</label><input name="label" required><label>Montant (€)</label><input name="amount" type="number" min="0" step="0.01" required><br><br><button class="primary">Enregistrer</button><button type="button" onclick="expenseEdit=null;show('budget')">Annuler</button></form></section>`;expenseEdit=null;renderBudget();}
 if(page==='agenda'){
 main.innerHTML=`
 <section><h2>Agenda administratif</h2><div id="calendar"></div>
@@ -196,11 +185,11 @@ main.innerHTML=`
 ${[...data.agenda].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>`<article>${esc(e.date)} — ${esc(e.label)} ${e.category?' — '+esc(e.category):''} <button onclick="removeAgenda(${data.agenda.indexOf(e)})">Supprimer</button></article>`).join('')}`;
  renderCalendar();
 }
-if(page==='profile'){
+ if(page==='profile'){
  const p=data.profile||{};
- main.innerHTML=`<section><h2>Mon profil personnel</h2><form onsubmit="saveProfile(event)"><label>Prénom</label><input name="first" autocomplete="given-name" value="${esc(p.first)}"><label>Nom</label><input name="last" autocomplete="family-name" value="${esc(p.last)}"><label>Club (facultatif)</label><input name="club" value="${esc(p.club)}"><label>E-mail (facultatif)</label><input type="email" name="email" value="${esc(p.email)}"><br><br><button class="primary">Enregistrer mon profil</button></form><p><small>Ces informations sont facultatives et conservées dans ce navigateur. Elles figurent dans vos sauvegardes : ne partagez pas celles-ci sans précaution.</small></p></section><section><h2>À propos</h2><p>My Shooting Log 3.2 — Personal Edition</p><p>Carnet personnel, sans compte obligatoire. Exportez régulièrement vos données. Pour transférer votre carnet, restaurez le fichier JSON sur votre autre appareil.</p></section>`;
- }
- if(page==='backup'){
+ main.innerHTML=`<section><h2>Mon profil personnel</h2>${avatar(p)}<form onsubmit="saveProfile(event)"><label>Prénom</label><input name="first" value="${esc(p.first)}"><label>Nom</label><input name="last" value="${esc(p.last)}"><label>E-mail (facultatif)</label><input type="email" name="email" value="${esc(p.email)}"><label>Photographie de profil</label><input type="file" accept="image/*" onchange="profileImage(this)"><button type="button" onclick="clearAvatar()">Retirer la photo</button><br><br><button class="primary">Enregistrer mon profil</button></form><small>Informations locales et facultatives. Les sauvegardes ne sont pas chiffrées.</small></section><section><h2>Mes affiliations personnelles</h2><div id="affiliations"></div><form id="affForm" onsubmit="saveAff(event)"><label>Nom du club ou organisme</label><input name="club" list="personalClubs" value="${esc(p.club)}" required><datalist id="personalClubs">${[...new Set([p.club,...affiliations().map(a=>a.club)].filter(Boolean))].map(c=>`<option value="${esc(c)}"></option>`).join('')}</datalist><label>Fédération</label><input name="federation"><label>Numéro officiel du club</label><input name="clubNumber"><label>Numéro personnel de membre</label><input name="memberNumber"><label>Numéro d’affiliation à la fédération</label><input name="federationNumber"><label>Renouvellement</label><input name="renewal" type="date"><label>Cotisation annuelle (€)</label><input name="fee" type="number" min="0" step="0.01"><br><br><button class="primary">Enregistrer l’affiliation</button><button type="button" onclick="show('profile')">Annuler</button></form></section>`;pendingAvatar=p.avatar||'';affEdit=null;renderAff();}
+ if(page==='help'){main.innerHTML=`<section><h2>Mode d’emploi</h2><p>Mon profil : personnalisez vos coordonnées et vos affiliations. Enregistrez chaque formulaire séparément.</p><p>Budget : sélectionnez une année ou un mois, ajoutez ou modifiez vos dépenses.</p><p>Agenda : consultez les échéances et cliquez sur un jour pour en afficher le détail.</p><p>Sauvegarde : exportez régulièrement un fichier JSON. Pour changer d’appareil, restaurez ce fichier. La restauration remplace les données actuelles.</p><p>Sur smartphone, utilisez le menu du navigateur pour ajouter un raccourci à l’écran d’accueil, si disponible.</p><p>Les données restent dans ce navigateur. Évitez la navigation privée et conservez vos sauvegardes hors de l’appareil.</p></section>`;}
+if(page==='backup'){
 main.innerHTML=`
 <section><h2>Sauvegarde</h2>
 <p>Conservez une copie de vos données et photographies.</p>
@@ -265,7 +254,7 @@ function exportData(){
 const url=URL.createObjectURL(new Blob(
 [JSON.stringify(data)],{type:'application/json'}));
 const a=document.createElement('a');
-a.href=url;a.download='my-shooting-log-3.2-'+today()+'.json';
+a.href=url;a.download='my-shooting-log-3.3-'+today()+'.json';
 a.click();
 setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -285,11 +274,28 @@ function deleteSession(i){if(!confirm('Supprimer cette séance ? Les photos sero
 function printSession(i){const items=[...main.querySelectorAll('article')];items.forEach(a=>{if(a.id!=='session-'+i)a.hidden=true;});try{window.print();}finally{items.forEach(a=>a.hidden=false);}}
 function viewPhoto(i){const img=document.getElementById('largePhoto');img.src=data.photos[i].image;img.style.maxHeight='75vh';img.style.maxWidth='100%';document.getElementById('viewer').showModal();}
 function filterPhotos(c){document.querySelectorAll('.photoEntry').forEach(a=>a.hidden=!!c&&a.dataset.category!==c);}
-function saveProfile(e){e.preventDefault();const old=data.profile;data.profile=Object.fromEntries(new FormData(e.target));if(save())show('home');else data.profile=old;}
+function saveProfile(e){e.preventDefault();const old=data.profile;data.profile={...old,...Object.fromEntries(new FormData(e.target)),avatar:pendingAvatar};if(save())show('profile');else data.profile=old;}
 function removeAgenda(i){if(!confirm('Supprimer cette échéance ?'))return;const old=data.agenda.slice();data.agenda.splice(i,1);if(save())show('agenda');else data.agenda=old;}
 let calendarMonth=new Date();calendarMonth.setDate(1);
 function moveMonth(n){calendarMonth.setMonth(calendarMonth.getMonth()+n);renderCalendar();}
-function renderCalendar(){const el=document.getElementById('calendar');if(!el)return;const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),start=(new Date(y,m,1).getDay()+6)%7,end=new Date(y,m+1,0).getDate();let cells=['L','M','M','J','V','S','D'].map(x=>'<b>'+x+'</b>').join('')+'<span></span>'.repeat(start);for(let d=1;d<=end;d++){const key=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const entries=data.agenda.filter(a=>a.date===key);cells+='<div class="day" title="'+esc(entries.map(a=>a.label).join(', '))+'">'+d+(entries.length?'<small> • '+entries.length+'</small>':'')+'</div>';}el.innerHTML='<div class="actions"><button type="button" onclick="moveMonth(-1)">‹</button><strong>'+calendarMonth.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})+'</strong><button type="button" onclick="moveMonth(1)">›</button></div><div class="calendarGrid">'+cells+'</div>';}
+function renderCalendar(){const el=document.getElementById('calendar');if(!el)return;const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth(),start=(new Date(y,m,1).getDay()+6)%7,end=new Date(y,m+1,0).getDate();let cells=['L','M','M','J','V','S','D'].map(x=>'<b>'+x+'</b>').join('')+'<span></span>'.repeat(start);for(let d=1;d<=end;d++){const key=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const entries=allDeadlines().filter(a=>a.date===key);cells+='<button type="button" onclick="calendarDetails(\''+key+'\')" class="day '+(key===today()?'today ':'')+(entries.length?'event':'')+'" title="'+esc(entries.map(a=>a.label).join(', '))+'">'+d+(entries.length?'<small> • '+entries.length+'</small>':'')+'</button>';}el.innerHTML='<div class="actions"><button type="button" onclick="moveMonth(-1)">‹</button><strong>'+calendarMonth.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})+'</strong><button type="button" onclick="moveMonth(1)">›</button></div><div class="calendarGrid">'+cells+'</div><div id="dayDetails"></div>';}
+let pendingAvatar='',affEdit=null,expenseEdit=null,budgetYear=String(new Date().getFullYear()),budgetMonth='';
+function avatar(p){return p&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p.avatar||'')?`<img class="avatar" src="${p.avatar}" alt="Photo de profil">`:'';}
+function profileImage(input){const file=input.files[0];if(!file)return;const url=URL.createObjectURL(file),im=new Image();im.onload=()=>{const c=document.createElement('canvas'),scale=Math.min(1,300/Math.max(im.width,im.height));c.width=Math.max(1,Math.round(im.width*scale));c.height=Math.max(1,Math.round(im.height*scale));c.getContext('2d').drawImage(im,0,0,c.width,c.height);pendingAvatar=c.toDataURL('image/jpeg',.8);URL.revokeObjectURL(url);alert('Photo prête. Enregistrez votre profil.');};im.onerror=()=>{URL.revokeObjectURL(url);alert('Photo illisible');};im.src=url;}
+function clearAvatar(){pendingAvatar='';alert('Enregistrez le profil pour retirer la photo.');}
+function affiliations(){return Array.isArray(data.affiliations)?data.affiliations:[];}
+function renderAff(){document.getElementById('affiliations').innerHTML=affiliations().map((a,i)=>`<article><strong>${esc(a.club)}</strong><p>${esc(a.federation)} — ${esc(a.renewal)}</p><p>Club : ${esc(a.clubNumber)} · Membre : ${esc(a.memberNumber)} · Fédération : ${esc(a.federationNumber)}</p><p>Cotisation : ${esc(a.fee)} €</p><button onclick="editAff(${i})">Modifier</button> <button onclick="deleteAff(${i})">Supprimer</button></article>`).join('');}
+function saveAff(e){e.preventDefault();const old=data.affiliations,arr=affiliations().slice(),v=Object.fromEntries(new FormData(e.target));if(affEdit===null)arr.push(v);else arr[affEdit]=v;data.affiliations=arr;if(save())show('profile');else data.affiliations=old;}
+function editAff(i){affEdit=i;const f=document.getElementById('affForm');for(const el of f.elements)if(el.name)el.value=affiliations()[i][el.name]||'';f.scrollIntoView();}
+function deleteAff(i){if(!confirm('Supprimer cette affiliation ?'))return;const old=data.affiliations;data.affiliations=affiliations().filter((a,j)=>i!==j);if(save())show('profile');else data.affiliations=old;}
+function allDeadlines(){return [...data.agenda,...affiliations().filter(a=>a.renewal).map(a=>({date:a.renewal,label:'Renouvellement : '+a.club}))];}
+function upcoming(){const items=allDeadlines().filter(a=>a.date>=today()).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);return '<h3>Prochaines échéances</h3>'+ (items.map(a=>`<p>${esc(a.date)} — ${esc(a.label)}</p>`).join('')||'<p>Aucune échéance à venir.</p>');}
+function calendarDetails(key){document.getElementById('dayDetails').innerHTML='<strong>'+esc(key)+'</strong>'+allDeadlines().filter(a=>a.date===key).map(a=>`<p>${esc(a.label)}</p>`).join('');}
+function renderBudget(){const rows=data.expenses.map((e,i)=>({e,i})).filter(({e})=>String(e.date).startsWith(budgetYear+(budgetMonth?'-'+budgetMonth:'')));const total=rows.reduce((n,{e})=>n+Number(e.amount),0);document.getElementById('budgetResults').innerHTML=`<p class="summary">Total de la période : ${total.toFixed(2)} €</p>`+rows.map(({e,i})=>`<article>${esc(e.date)} — ${esc(e.label)} — ${Number(e.amount).toFixed(2)} €<div class="actions"><button onclick="editExpense(${i})">Modifier</button><button onclick="deleteExpense(${i})">Supprimer</button></div></article>`).join('');}
+function editExpense(i){expenseEdit=i;const f=document.getElementById('expenseForm');for(const el of f.elements)if(el.name)el.value=data.expenses[i][el.name]??'';document.getElementById('expenseTitle').textContent='Modifier la dépense';f.scrollIntoView();}
+function saveExpense(e){e.preventDefault();const old=data.expenses.slice(),v=Object.fromEntries(new FormData(e.target));if(expenseEdit===null)data.expenses.unshift({...v,id:crypto.randomUUID()});else data.expenses[expenseEdit]={...data.expenses[expenseEdit],...v};if(save()){budgetYear=v.date.slice(0,4);budgetMonth='';show('budget');}else data.expenses=old;}
+function deleteExpense(i){if(!confirm('Supprimer cette dépense ?'))return;const old=data.expenses.slice();data.expenses.splice(i,1);if(save())show('budget');else data.expenses=old;}
+
 show('home');
 </script>
 </body>
