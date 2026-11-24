@@ -87,7 +87,7 @@ main.innerHTML=`
 <label>Date</label>
 <input name="date" type="date" value="${today()}" required>
 <label>Heure</label>
-<input name="time" type="time" required>
+<input name="time" type="time" value="${new Date().toTimeString().slice(0,5)}" required>
 <label>Club</label>
 <input name="club" required>
 <label>Matériel utilisé</label>
@@ -144,13 +144,22 @@ ${data.sessions.map(s=>`<option value="${esc(s.id)}">${esc(s.date)} — ${esc(s.
 <input id="light" type="range" min="50" max="150" value="100" oninput="drawPhoto()">
 <label>Contraste</label>
 <input id="contrast" type="range" min="50" max="150" value="100" oninput="drawPhoto()">
+<label>Catégorie du document</label>
+<select id="photoCategory">
+<option>Photographie de séance</option>
+<option>Emballage - recto</option>
+<option>Emballage - verso</option>
+<option>Étiquette</option>
+<option>Autre document</option>
+</select>
+
 <label>Commentaires</label>
 <textarea id="comment"></textarea>
 <br><br>
 <button class="primary" onclick="archivePhoto()">Archiver la photo</button>
 </section>
 <h2>Photographies enregistrées</h2>
-${data.photos.map(p=>`<article><small>${esc(p.date)}</small><br><img src="${p.image}"><p>${esc(p.note)}</p></article>`).join('')}`;
+${data.photos.map(p=>`<article><small>${esc(p.date)} — ${esc(p.category || 'Sans catégorie')}</small><br><img src="${p.image}"><p>${esc(p.note)}</p></article>`).join('')}`;
 source=null;angle=0;
 }
 if(page==='budget'){
@@ -237,6 +246,7 @@ data.photos.unshift({
 date:today(),
 session:document.getElementById('association').value,
 note:document.getElementById('comment').value,
+category:document.getElementById('photoCategory').value,  
 image:document.getElementById('preview').toDataURL('image/jpeg',0.75)
 });
 if(save())alert('Photographie enregistrée.');
