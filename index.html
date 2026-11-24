@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Shooting Log 3.6</title>
+<title>My Shooting Log 3.8</title>
 <style>
 *{box-sizing:border-box}
 body{margin:auto;max-width:900px;padding:18px;background:#192522;color:#fff;font:16px Arial,sans-serif}
@@ -19,7 +19,7 @@ img{max-width:100%;border-radius:8px;margin:12px 0}
 small{color:#b9c8c1}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .metric{font-size:30px;color:#efb27b}
-footer{text-align:center;margin:25px 0}
+footer{text-align:center;margin:25px 0} .creator-contact{padding:16px 8px;line-height:1.7;overflow-wrap:anywhere} .creator-contact a{color:inherit;text-decoration:underline} .creator-contact .creator-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px}
 @media print{nav,button,form{display:none}body,section,article{background:white;color:black}h1,h2{color:black}}
 dialog{background:#293c35;color:white;border:1px solid #72847a;border-radius:14px;max-width:95vw;max-height:95vh}dialog img{max-height:75vh;object-fit:contain;cursor:zoom-in} .actions{display:flex;gap:8px;flex-wrap:wrap} @media print{.actions,footer{display:none} article{break-inside:avoid} small{color:black}}
 .calendarGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center;margin:12px 0}.day{background:#192522;border-radius:5px;padding:8px 2px}.day small{color:#efb27b;display:block}
@@ -28,7 +28,7 @@ html.light body{background:#f4f2ed;color:#20332c}html.light section,html.light a
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#192522"></head>
 <body>
 <div class="brand"><img src="icon-192.png" alt=""><h1>MY SHOOTING LOG</h1></div>
-<p>Version 3.6 — Smart Memory Edition</p>
+<p>Version 3.8 — Signature Edition</p>
 <div class="actions settings"><button onclick="toggleTheme()">Thème clair / sombre</button><button onclick="installApp()">Installer</button></div><label for="language">Langue / Language / Taal</label><select id="language" onchange="setLanguage(this.value)"><option value="fr">Français</option><option value="en">English</option><option value="nl">Nederlands</option></select><nav>
 <button onclick="show('home')">Accueil</button>
 <button onclick="show('session')">Séance</button>
@@ -40,7 +40,7 @@ html.light body{background:#f4f2ed;color:#20332c}html.light section,html.light a
 <button onclick="show('backup')">Sauvegarde</button><button onclick="show('help')">Aide</button><button onclick="show('about')">À propos / About / Over</button>
 </nav>
 <main id="main"></main><dialog id="viewer"><button onclick="this.parentElement.close()">Fermer</button><div style="overflow:auto"><img id="largePhoto" alt="Photographie agrandie" onclick="this.style.maxHeight=this.style.maxHeight==='none'?'75vh':'none';this.style.maxWidth=this.style.maxWidth==='none'?'100%':'none'"></div></dialog>
-<footer><small>My Shooting Log — 2026</small></footer>
+<footer id="creatorFooter"><small>© 2026 Benoît Moureaux</small></footer>
 <script>
 const main=document.getElementById('main');
 let data={sessions:[],photos:[],expenses:[],agenda:[]};
@@ -254,7 +254,7 @@ function exportData(){
 const url=URL.createObjectURL(new Blob(
 [JSON.stringify(data)],{type:'application/json'}));
 const a=document.createElement('a');
-a.href=url;a.download='my-shooting-log-3.6-'+today()+'.json';
+a.href=url;a.download='my-shooting-log-3.8-'+today()+'.json';
 a.click();
 setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -303,10 +303,15 @@ async function installApp(){if(installPrompt){await installPrompt.prompt();insta
 if('serviceWorker' in navigator && location.protocol==='https:'){navigator.serviceWorker.register('./sw.js').catch(console.warn);}
 const dictionary = {"Accueil": ["Home", "Start"], "Séance": ["Session", "Sessie"], "Historique": ["History", "Geschiedenis"], "Photos": ["Photos", "Foto’s"], "Budget": ["Budget", "Budget"], "Agenda": ["Calendar", "Agenda"], "Mon profil": ["My profile", "Mijn profiel"], "Sauvegarde": ["Backup", "Back-up"], "Aide": ["Help", "Help"], "Thème clair / sombre": ["Light / dark theme", "Licht / donker thema"], "Installer": ["Install", "Installeren"], "Fermer": ["Close", "Sluiten"], "Séances": ["Sessions", "Sessies"], "Dépenses": ["Expenses", "Uitgaven"], "Échéances": ["Deadlines", "Termijnen"], "Nouvelle séance": ["New session", "Nieuwe sessie"], "Ajouter une photo": ["Add photo", "Foto toevoegen"], "Date": ["Date", "Datum"], "Heure": ["Time", "Tijd"], "Club": ["Club", "Club"], "Observations": ["Notes", "Notities"], "Enregistrer": ["Save", "Opslaan"], "Modifier": ["Edit", "Bewerken"], "Supprimer": ["Delete", "Verwijderen"], "Annuler": ["Cancel", "Annuleren"], "Année": ["Year", "Jaar"], "Mois (facultatif)": ["Month (optional)", "Maand (optioneel)"], "Tous les mois": ["All months", "Alle maanden"], "Nouvelle dépense": ["New expense", "Nieuwe uitgave"], "Libellé": ["Description", "Omschrijving"], "Montant (€)": ["Amount (€)", "Bedrag (€)"], "Agenda administratif": ["Administrative calendar", "Administratieve agenda"], "Échéance": ["Deadline", "Vervaldatum"], "Catégorie": ["Category", "Categorie"], "Ajouter": ["Add", "Toevoegen"], "Mon profil personnel": ["My personal profile", "Mijn persoonlijk profiel"], "Prénom": ["First name", "Voornaam"], "Nom": ["Last name", "Achternaam"], "E-mail (facultatif)": ["Email (optional)", "E-mail (optioneel)"], "Photographie de profil": ["Profile photo", "Profielfoto"], "Retirer la photo": ["Remove photo", "Foto verwijderen"], "Enregistrer mon profil": ["Save my profile", "Mijn profiel opslaan"], "Mes affiliations personnelles": ["My memberships", "Mijn lidmaatschappen"], "Nom du club ou organisme": ["Club or organisation name", "Naam club of organisatie"], "Fédération": ["Federation", "Federatie"], "Numéro officiel du club": ["Official club number", "Officieel clubnummer"], "Numéro personnel de membre": ["Personal membership number", "Persoonlijk lidnummer"], "Numéro d’affiliation à la fédération": ["Federation membership number", "Federatielidnummer"], "Renouvellement": ["Renewal", "Verlenging"], "Cotisation annuelle (€)": ["Annual fee (€)", "Jaarbijdrage (€)"], "Enregistrer l’affiliation": ["Save membership", "Lidmaatschap opslaan"], "Mode d’emploi": ["User guide", "Handleiding"], "Exporter": ["Export", "Exporteren"], "Restaurer une sauvegarde": ["Restore backup", "Back-up herstellen"], "Prochaines échéances": ["Upcoming deadlines", "Komende termijnen"], "Aucune échéance à venir.": ["No upcoming deadlines.", "Geen komende termijnen."], "Imprimer / PDF": ["Print / PDF", "Afdrukken / PDF"], "Autre": ["Other", "Andere"], "Cotisation": ["Membership fee", "Lidgeld"], "Document administratif": ["Administrative document", "Administratief document"], "Rendez-vous": ["Appointment", "Afspraak"], "Conservez une copie de vos données et photographies.": ["Keep a copy of your data and photos.", "Bewaar een kopie van uw gegevens en foto’s."], "Informations locales et facultatives. Les sauvegardes ne sont pas chiffrées.": ["Optional local information. Backups are not encrypted.", "Optionele lokale gegevens. Back-ups zijn niet versleuteld."]};
 let lang='fr';try{lang=localStorage.getItem('mslLanguage')||'fr'}catch(e){}if(!['fr','en','nl'].includes(lang))lang='fr';
+
+const creatorLabels={fr:['Créateur et concepteur de l’application','Contacter le créateur','Signaler un bug','Proposer une amélioration','Application gratuite'],en:['Application creator and designer','Contact the creator','Report a bug','Suggest an improvement','Free application'],nl:['Maker en ontwerper van de app','Contacteer de maker','Een fout melden','Een verbetering voorstellen','Gratis applicatie']};
+function creatorMarkup(){const t=creatorLabels[lang];const mail='mailto:benoitmoureaux1966@gmail.com';const link=(label,subject)=>'<a href="'+mail+'?subject='+encodeURIComponent('MY SHOOTING LOG 3.8 — '+subject)+'">'+label+'</a>';return '<div class="creator-contact"><strong>© 2026 Benoît Moureaux</strong><div>'+t[0]+'</div><div class="creator-links">'+link(t[1],t[1])+link(t[2],t[2])+link(t[3],t[3])+'</div><div><a href="'+mail+'">benoitmoureaux1966@gmail.com</a></div><small>'+t[4]+'</small></div>';}
+function renderCreator(){document.getElementById('creatorFooter').innerHTML=creatorMarkup();}
+
 let currentPage='home';const originalShow=show;
-function translateUI(){document.documentElement.lang=lang;document.getElementById('language').value=lang;if(lang==='fr')return;const nodes=document.querySelectorAll('nav button,.settings button,main label,main button,main h2,main h3,main small,main p,main option,#viewer button');for(const el of nodes){if(el.children.length||el.closest('article')&&!el.matches('button'))continue;const key=el.textContent.trim();if(dictionary[key]){if(el.tagName==='OPTION'&&!el.hasAttribute('value'))el.value=key;el.textContent=dictionary[key][lang==='en'?0:1];}}}
+function translateUI(){renderCreator();document.documentElement.lang=lang;document.getElementById('language').value=lang;if(lang==='fr')return;const nodes=document.querySelectorAll('nav button,.settings button,main label,main button,main h2,main h3,main small,main p,main option,#viewer button');for(const el of nodes){if(el.children.length||el.closest('article')&&!el.matches('button'))continue;const key=el.textContent.trim();if(dictionary[key]){if(el.tagName==='OPTION'&&!el.hasAttribute('value'))el.value=key;el.textContent=dictionary[key][lang==='en'?0:1];}}}
 const guide={fr:'Les données restent dans ce navigateur. Exportez régulièrement une sauvegarde. La restauration remplace les données actuelles. Les fichiers JSON ne sont pas chiffrés.',en:'Data stays in this browser. Export backups regularly. Restoring replaces current data. JSON files are not encrypted.',nl:'Gegevens blijven in deze browser. Exporteer regelmatig een back-up. Herstellen vervangt de huidige gegevens. JSON-bestanden zijn niet versleuteld.'};
-show=function(page){currentPage=page;if(page==='about'){main.innerHTML='<section><h2>MY SHOOTING LOG 3.6</h2><p>Smart Memory Edition — Benoît Moureaux</p><p>'+guide[lang]+'</p></section>';}else if(page==='help'&&lang!=='fr'){main.innerHTML='<section><h2>'+ (lang==='en'?'User guide':'Handleiding')+'</h2><p>'+guide[lang]+'</p><p>'+ (lang==='en'?'Profile: save your details and memberships separately. Budget: add expenses and filter by month. Calendar: view deadlines. Install: use your browser menu.':'Profiel: sla uw gegevens en lidmaatschappen afzonderlijk op. Budget: voeg uitgaven toe en filter per maand. Agenda: bekijk vervaldata. Installeren: gebruik het browsermenu.')+'</p></section>';}else originalShow(page);translateUI();};
+show=function(page){currentPage=page;if(page==='about'){main.innerHTML='<section><h2>MY SHOOTING LOG 3.8</h2><p>Signature Edition — Benoît Moureaux</p><p>'+guide[lang]+'</p>'+creatorMarkup()+'</section>';}else if(page==='help'&&lang!=='fr'){main.innerHTML='<section><h2>'+ (lang==='en'?'User guide':'Handleiding')+'</h2><p>'+guide[lang]+'</p><p>'+ (lang==='en'?'Profile: save your details and memberships separately. Budget: add expenses and filter by month. Calendar: view deadlines. Install: use your browser menu.':'Profiel: sla uw gegevens en lidmaatschappen afzonderlijk op. Budget: voeg uitgaven toe en filter per maand. Agenda: bekijk vervaldata. Installeren: gebruik het browsermenu.')+'</p></section>';}else originalShow(page);translateUI();};
 function setLanguage(v){if(!['fr','en','nl'].includes(v))return;if(!confirm('Changer de langue ? Les modifications non enregistrées seront perdues. / Change language? Unsaved changes will be lost. / Taal wijzigen? Niet-opgeslagen wijzigingen gaan verloren.')){document.getElementById('language').value=lang;return;}try{localStorage.setItem('mslLanguage',v)}catch(e){}location.reload();}
 
 const memoryFields = {
