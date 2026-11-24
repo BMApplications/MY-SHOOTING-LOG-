@@ -1,2 +1,2 @@
-MY SHOOTING LOG 6.0 Premium bêta
-Sauvegarder avant installation. Publier les cinq fichiers web. Nouveau menu Premium : budget annuel, CSV, agenda ICS et échéances. Les rappels dépendent du calendrier importateur. Interface Premium en français. Les données ordinaires restent non chiffrées.
+MY SHOOTING LOG 6.1 — Smart Memory Premium
+Sauvegarder avant installation. Publier les cinq fichiers web. Sélecteurs administratifs pour clubs, fédérations, dépenses et échéances. Les valeurs proviennent des enregistrements existants. Saisie libre conservée. Matériel et munitions inchangés.
