@@ -1,4 +1,2 @@
-MY SHOOTING LOG 5.0 Bêta — BM Applications
-Sauvegardez vos données 3.9 avant installation. Publiez les cinq fichiers web.
-Documents PDF/JPG/PNG limités à 1 Mo chacun, stockage navigateur limité. Documents et exports chiffrés AES-GCM; données ordinaires non chiffrées. Mot de passe perdu = fichier irrécupérable. Testez avec des données fictives. Rapport administratif imprimable via PDF navigateur. Traductions partielles.
-© 2026 Benoît Moureaux — myshootinglog@gmail.com
+MY SHOOTING LOG 6.0 Premium bêta
+Sauvegarder avant installation. Publier les cinq fichiers web. Nouveau menu Premium : budget annuel, CSV, agenda ICS et échéances. Les rappels dépendent du calendrier importateur. Interface Premium en français. Les données ordinaires restent non chiffrées.
