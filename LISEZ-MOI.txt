@@ -1,2 +1,2 @@
-MY SHOOTING LOG 6.1 — Smart Memory Premium
-Sauvegarder avant installation. Publier les cinq fichiers web. Sélecteurs administratifs pour clubs, fédérations, dépenses et échéances. Les valeurs proviennent des enregistrements existants. Saisie libre conservée. Matériel et munitions inchangés.
+MY SHOOTING LOG 6.2 — Final Beta
+Sauvegarder avant installation. Publier les cinq fichiers web. Corrections des sélecteurs administratifs, validation structurelle des sauvegardes et repli hors connexion. Matériel et calibre inchangés. Tests sur smartphone nécessaires.
