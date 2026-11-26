@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Shooting Log 7.0</title>
+<title>My Shooting Log 7.1</title>
 <style>
 *{box-sizing:border-box}
 body{margin:auto;max-width:900px;padding:18px;background:#192522;color:#fff;font:16px Arial,sans-serif}
@@ -28,7 +28,7 @@ html.light body{background:#f4f2ed;color:#20332c}html.light section,html.light a
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#192522"></head>
 <body>
 <div class="brand"><img src="icon-192.png" alt=""><h1>MY SHOOTING LOG</h1></div>
-<p>Version 7.0 — International Edition</p>
+<p>Version 7.1 — International Edition</p>
 <div class="actions settings"><button onclick="toggleTheme()">Thème clair / sombre</button><button onclick="installApp()">Installer</button></div><label for="language">Langue / Language / Taal</label><select id="language" onchange="setLanguage(this.value)"><option value="fr">Français</option><option value="en">English</option><option value="nl">Nederlands</option><option value="de">Deutsch</option></select><nav>
 <button onclick="show('home')">Accueil</button>
 <button onclick="show('session')">Séance</button>
@@ -75,13 +75,13 @@ if(page!=='session')editing=null;
 if(page==='home'){
 main.innerHTML=`
 <div class="grid">
-<section>Séances<div class="metric">${data.sessions.length}</div></section>
-<section>Photos<div class="metric">${data.photos.length}</div></section>
-<section>Dépenses<div class="metric">${data.expenses.reduce((s,e)=>s+Number(e.amount),0).toFixed(2)} €</div></section>
-<section>Échéances<div class="metric">${data.agenda.length}</div></section>
+<section>${tr71("Séances")}<div class="metric">${data.sessions.length}</div></section>
+<section>${tr71("Photos")}<div class="metric">${data.photos.length}</div></section>
+<section>${tr71("Dépenses")}<div class="metric">${money71(data.expenses.reduce((s,e)=>s+Number(e.amount),0))}</div></section>
+<section>${tr71("Échéances")}<div class="metric">${data.agenda.length}</div></section>
 </div>
 <section>
-${avatar(data.profile)}<h2>Bienvenue${data.profile?.first ? ", "+esc(data.profile.first) : " dans votre carnet"}</h2>
+${avatar(data.profile)}<h2>${tr71("Bienvenue")}${data.profile?.first ? ", "+esc(data.profile.first) : tr71(" dans votre carnet")}</h2>
 ${upcoming()}<button class="primary" onclick="show('session')">Nouvelle séance</button>
 <button onclick="show('photos')">Ajouter une photo</button>
 </section>`;
@@ -254,7 +254,7 @@ function exportData(){
 const url=URL.createObjectURL(new Blob(
 [JSON.stringify(data)],{type:'application/json'}));
 const a=document.createElement('a');
-a.href=url;a.download='my-shooting-log-7.0-'+today()+'.json';
+a.href=url;a.download='my-shooting-log-7.1-'+today()+'.json';
 a.click();
 setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -307,15 +307,15 @@ let lang='fr';try{lang=localStorage.getItem('mslLanguage')||'fr'}catch(e){}if(![
 
 const creatorLabels={fr:['Créateur et concepteur de l’application','Contacter le créateur','Signaler un bug','Proposer une amélioration','Application gratuite'],en:['Application creator and designer','Contact the creator','Report a bug','Suggest an improvement','Free application'],nl:['Maker en ontwerper van de app','Contacteer de maker','Een fout melden','Een verbetering voorstellen','Gratis applicatie']};
 creatorLabels.de=['Entwickler der Anwendung','Entwickler kontaktieren','Fehler melden','Verbesserung vorschlagen','Kostenlose Anwendung'];
-function creatorMarkup(){const t=creatorLabels[lang];const mail='mailto:myshootinglog@gmail.com';const link=(label,subject)=>'<a href="'+mail+'?subject='+encodeURIComponent('MY SHOOTING LOG 7.0 — '+subject)+'">'+label+'</a>';return '<div class="creator-contact"><strong>© 2026 Benoît Moureaux</strong><div>'+t[0]+'</div><div class="creator-links">'+link(t[1],t[1])+link(t[2],t[2])+link(t[3],t[3])+'</div><div><a href="'+mail+'">myshootinglog@gmail.com</a></div><small>'+t[4]+'</small></div>';}
+function creatorMarkup(){const t=creatorLabels[lang];const mail='mailto:myshootinglog@gmail.com';const link=(label,subject)=>'<a href="'+mail+'?subject='+encodeURIComponent('MY SHOOTING LOG 7.1 — '+subject)+'">'+label+'</a>';return '<div class="creator-contact"><strong>© 2026 Benoît Moureaux</strong><div>'+t[0]+'</div><div class="creator-links">'+link(t[1],t[1])+link(t[2],t[2])+link(t[3],t[3])+'</div><div><a href="'+mail+'">myshootinglog@gmail.com</a></div><small>'+t[4]+'</small></div>';}
 function renderCreator(){document.getElementById('creatorFooter').innerHTML=creatorMarkup();}
 
 let currentPage='home';const originalShow=show;
 function translateUI(){renderCreator();document.documentElement.lang=lang;document.getElementById('language').value=lang;if(lang==='fr')return;const nodes=document.querySelectorAll('nav button,.settings button,main label,main button,main h2,main h3,main small,main p,main option,#viewer button');for(const el of nodes){if(el.children.length||el.closest('article')&&!el.matches('button'))continue;const key=el.textContent.trim();if(dictionary[key]){if(el.tagName==='OPTION'&&!el.hasAttribute('value'))el.value=key;el.textContent=dictionary[key][lang==='en'?0:lang==='nl'?1:2];}}}
 const guide={fr:'Les données restent dans ce navigateur. Exportez régulièrement une sauvegarde. La restauration remplace les données actuelles. Les fichiers JSON ne sont pas chiffrés.',en:'Data stays in this browser. Export backups regularly. Restoring replaces current data. JSON files are not encrypted.',nl:'Gegevens blijven in deze browser. Exporteer regelmatig een back-up. Herstellen vervangt de huidige gegevens. JSON-bestanden zijn niet versleuteld.'};
 guide.de='Die Daten bleiben in diesem Browser. Erstellen Sie regelmäßig Sicherungen. Eine Wiederherstellung ersetzt die aktuellen Daten. Normale JSON-Dateien sind nicht verschlüsselt.';
-show=function(page){currentPage=page;if(page==='about'){main.innerHTML='<section><h2>MY SHOOTING LOG 7.0</h2><p>International Edition — Benoît Moureaux</p><p>'+guide[lang]+'</p>'+creatorMarkup()+'</section>';}else if(page==='help'&&lang!=='fr'){main.innerHTML='<section><h2>'+ (lang==='en'?'User guide':'Handleiding')+'</h2><p>'+guide[lang]+'</p><p>'+ (lang==='en'?'Profile: save your details and memberships separately. Budget: add expenses and filter by month. Calendar: view deadlines. Install: use your browser menu.':'Profiel: sla uw gegevens en lidmaatschappen afzonderlijk op. Budget: voeg uitgaven toe en filter per maand. Agenda: bekijk vervaldata. Installeren: gebruik het browsermenu.')+'</p></section>';}else originalShow(page);translateUI();};
-function setLanguage(v){if(!['fr','en','nl','de'].includes(v))return;if(!confirm('Changer de langue ? Les modifications non enregistrées seront perdues. / Change language? Unsaved changes will be lost. / Taal wijzigen? Niet-opgeslagen wijzigingen gaan verloren.')){document.getElementById('language').value=lang;return;}try{localStorage.setItem('mslLanguage',v)}catch(e){}location.reload();}
+show=function(page){currentPage=page;if(page==='about'){main.innerHTML='<section><h2>MY SHOOTING LOG 7.1</h2><p>International Edition — Benoît Moureaux</p><p>'+guide[lang]+'</p>'+creatorMarkup()+'</section>';}else if(page==='help'&&lang!=='fr'){main.innerHTML='<section><h2>'+ (lang==='en'?'User guide':'Handleiding')+'</h2><p>'+guide[lang]+'</p><p>'+ (lang==='en'?'Profile: save your details and memberships separately. Budget: add expenses and filter by month. Calendar: view deadlines. Install: use your browser menu.':'Profiel: sla uw gegevens en lidmaatschappen afzonderlijk op. Budget: voeg uitgaven toe en filter per maand. Agenda: bekijk vervaldata. Installeren: gebruik het browsermenu.')+'</p></section>';}else originalShow(page);translateUI();};
+function setLanguage(v){if(!['fr','en','nl','de'].includes(v))return;if(!confirm(({fr:'Changer de langue ? Les modifications non enregistrées seront perdues.',en:'Change language? Unsaved changes will be lost.',nl:'Taal wijzigen? Niet-opgeslagen wijzigingen gaan verloren.',de:'Sprache ändern? Nicht gespeicherte Änderungen gehen verloren.'})[lang])){document.getElementById('language').value=lang;return;}try{localStorage.setItem('mslLanguage',v)}catch(e){}location.reload();}
 
 const memoryFields = {
  club: {label:['Clubs et organismes','Clubs and organisations','Clubs en organisaties'], sources:()=>[data.profile?.club,...affiliations().map(a=>a.club),...data.sessions.map(a=>a.club)]},
@@ -366,7 +366,7 @@ function premium6(){const year=new Date().getFullYear();const totals=Array(12).f
 const prev6=show;show=function(page){if(page==='premium6'){currentPage=page;premium6();}else prev6(page);};const premiumButton=document.createElement('button');premiumButton.textContent='Premium';premiumButton.onclick=()=>show('premium6');document.querySelector('nav').append(premiumButton);
 
 
-const intl7={fr:['Centre administratif','Animations','Recherche administrative','Sauvegarde recommandée après 7 jours','Dernier export','Stockage local estimé','Aucune échéance','Historique : 7.0 International Edition','Mode d’emploi'],en:['Administration centre','Animations','Administrative search','Backup recommended after 7 days','Last export','Estimated local storage','No deadlines','History: 7.0 International Edition','User guide'],nl:['Administratief centrum','Animaties','Administratief zoeken','Back-up aanbevolen na 7 dagen','Laatste export','Geschatte lokale opslag','Geen termijnen','Geschiedenis: 7.0 International Edition','Handleiding'],de:['Verwaltungszentrum','Animationen','Verwaltungssuche','Sicherung nach 7 Tagen empfohlen','Letzter Export','Geschätzter lokaler Speicher','Keine Fristen','Versionsverlauf: 7.0 International Edition','Benutzerhandbuch']}[lang];
+const intl7={fr:['Centre administratif','Animations','Recherche administrative','Sauvegarde recommandée après 7 jours','Dernier export','Stockage local estimé','Aucune échéance','Historique : 7.1 International Edition','Mode d’emploi'],en:['Administration centre','Animations','Administrative search','Backup recommended after 7 days','Last export','Estimated local storage','No deadlines','History: 7.1 International Edition','User guide'],nl:['Administratief centrum','Animaties','Administratief zoeken','Back-up aanbevolen na 7 dagen','Laatste export','Geschatte lokale opslag','Geen termijnen','Geschiedenis: 7.1 International Edition','Handleiding'],de:['Verwaltungszentrum','Animationen','Verwaltungssuche','Sicherung nach 7 Tagen empfohlen','Letzter Export','Geschätzter lokaler Speicher','Keine Fristen','Versionsverlauf: 7.1 International Edition','Benutzerhandbuch']}[lang];
 function motion7(){const off=document.documentElement.classList.toggle('no-motion');try{localStorage.setItem('mslMotion7',off?'off':'on')}catch(e){}}
 try{document.documentElement.classList.toggle('no-motion',localStorage.getItem('mslMotion7')==='off')}catch(e){}
 const mb7=document.createElement('button');mb7.textContent=intl7[1];mb7.onclick=motion7;document.querySelector('.settings').append(mb7);
@@ -379,6 +379,11 @@ function centre7(){const dates=allDeadlines().filter(x=>x.date>=today()).sort((a
 const nav7=document.createElement('button');nav7.textContent=intl7[0];nav7.onclick=()=>show('centre7');document.querySelector('nav').append(nav7);
 const prev7=show;show=function(page){if(page==='centre7'){currentPage=page;centre7();return;}if(page==='help'&&lang==='de'){currentPage=page;main.innerHTML='<section><h2>'+intl7[8]+'</h2><p>'+guide.de+'</p><p>Profil: Mitgliedschaften speichern. Budget: Ausgaben erfassen. Kalender: Fristen prüfen. Sicherung: Daten exportieren. Installation: Browsermenü verwenden.</p></section>';return;}prev7(page);if(page==='home'||page==='about'){const el=document.createElement('section');el.textContent=page==='home'?backupStatus7():intl7[7];main.append(el);}};
 
+Object.assign(dictionary,{"Bienvenue": ["Welcome", "Welkom", "Willkommen"], " dans votre carnet": [" to your log", " in uw logboek", " in Ihrem Logbuch"], "À propos / About / Over": ["About", "Over de app", "Über die App"], "Langue / Language / Taal": ["Language", "Taal", "Sprache"], "Confidentialité": ["Privacy", "Privacy", "Datenschutz"], "Échéances / Deadlines": ["Deadlines", "Termijnen", "Fristen"], "Exporter agenda (.ics)": ["Export calendar (.ics)", "Agenda exporteren (.ics)", "Kalender exportieren (.ics)"], "PDF / Print": ["PDF / Print", "PDF / Afdrukken", "PDF / Drucken"], "Les données ordinaires restent non chiffrées dans le navigateur. Sans mot de passe, aucune récupération des fichiers chiffrés.": ["Ordinary data remains unencrypted in the browser. Encrypted files cannot be recovered without the password.", "Gewone gegevens blijven onversleuteld in de browser. Zonder wachtwoord kunnen versleutelde bestanden niet worden hersteld.", "Normale Daten bleiben unverschlüsselt im Browser. Ohne Passwort können verschlüsselte Dateien nicht wiederhergestellt werden."], "Les données ordinaires sont stockées localement sans chiffrement. Les sauvegardes chiffrées et documents utilisent le module Sécurité. La suppression des données du navigateur peut entraîner leur perte. Aucun rappel en arrière-plan garanti.": ["Ordinary data is stored locally without encryption. Encrypted backups and documents use the Security module. Clearing browser data may cause data loss. Background reminders are not guaranteed.", "Gewone gegevens worden lokaal onversleuteld opgeslagen. Versleutelde back-ups en documenten gebruiken de beveiligingsmodule. Het wissen van browsergegevens kan gegevensverlies veroorzaken. Achtergrondherinneringen zijn niet gegarandeerd.", "Normale Daten werden lokal unverschlüsselt gespeichert. Verschlüsselte Sicherungen und Dokumente verwenden das Sicherheitsmodul. Das Löschen von Browserdaten kann zu Datenverlust führen. Hintergrund-Erinnerungen sind nicht garantiert."]});
+function tr71(k){return lang==='fr'?k:(dictionary[k]?.[lang==='en'?0:lang==='nl'?1:2]??k);}
+function money71(n){return new Intl.NumberFormat({fr:"fr-BE",nl:"nl-BE",de:"de-BE",en:"en-GB"}[lang],{style:"currency",currency:"EUR"}).format(n);}
+const show71=show;show=function(page){show71(page);translateUI();};
+document.querySelector('label[for="language"]').textContent=lang==='fr'?'Langue':tr71('Langue / Language / Taal');
 show('home');
 </script>
 </body>

@@ -1,3 +1,5 @@
-MY SHOOTING LOG 7.0 — International Edition
+MY SHOOTING LOG 7.1 — International Edition
 Sauvegardez vos données avant mise à jour. Déployez les cinq fichiers web à la racine du dépôt. Traductions partielles, test mobile requis. Les rappels sont affichés dans l’application.
 © 2026 Benoît Moureaux — BM Applications
+
+7.1: correction des traductions du tableau de bord et de plusieurs libelles.
